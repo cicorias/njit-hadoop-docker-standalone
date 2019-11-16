@@ -15,9 +15,9 @@ RUN \
 
 # download and extract hadoop, set JAVA_HOME in hadoop-env.sh, update path
 RUN \
-  wget http://apache.mirrors.tds.net/hadoop/common/hadoop-2.8.5/hadoop-2.8.5.tar.gz && \
-  tar -xzf hadoop-2.8.5.tar.gz && \
-  mv hadoop-2.8.5 $HADOOP_HOME && \
+  wget http://apache.mirrors.tds.net/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz && \
+  tar -xzf hadoop-3.2.1.tar.gz && \
+  mv hadoop-3.2.1 $HADOOP_HOME && \
   echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
   echo "PATH=$PATH:$HADOOP_HOME/bin" >> ~/.bashrc
 
