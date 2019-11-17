@@ -2,12 +2,12 @@
 A minimal Hadoop 3.2.x image (currently version 3.2.1)
 
 ## Building Image
-Example building this image with name "my-hadoop-2":
+Example building this image with name "hadoop-3":
 
     docker build -t hadoop-3 .
 
 ## Create and Run Container
-Create container named "hadoop-2", map container port 8080 to host port 8080, set to delete container after shut down:
+Create container named "hadoop-3", map container port 8080 to host port 8080, set to delete container after shut down:
    
     docker run --rm -p 8088:8088 --name hadoop-3 -d hadoop-3
 
