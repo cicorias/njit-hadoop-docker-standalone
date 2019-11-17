@@ -1,5 +1,12 @@
 #!/bin/bash
 
+_term() { 
+  echo "Caught SIGTERM signal!"
+  exit 0
+}
+
+trap _term SIGINT SIGTERM
+
 # start ssh server
 /etc/init.d/ssh start
 
@@ -24,4 +31,5 @@ $HADOOP_HOME/sbin/start-yarn.sh
 $HADOOP_HOME/bin/mapred --daemon start historyserver
 
 # keep container running
-tail -f /dev/null
+#tail -f /dev/null
+sleep infinity
