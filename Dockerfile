@@ -32,6 +32,8 @@ ADD configs/*xml $HADOOP_HOME/etc/hadoop/
 
 # copy ssh config
 ADD configs/ssh_config /root/.ssh/config
+RUN chmod 0600 /root/.ssh/config
+
 
 # copy script to start hadoop
 ADD start-hadoop.sh start-hadoop.sh

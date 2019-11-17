@@ -15,8 +15,6 @@ export YARN_NODEMANAGER_USER="root"
 
 sed 's/mesg n || true/test -t 0 && mesg n/g' /root/.profile > /root/.profile
 
-
-
 # start hadoop
 $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/bin/hdfs dfs -mkdir /user
