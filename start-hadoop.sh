@@ -20,7 +20,8 @@ $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/bin/hdfs dfs -mkdir /user
 $HADOOP_HOME/bin/hdfs dfs -mkdir /user/root
 $HADOOP_HOME/sbin/start-yarn.sh
-$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
+#$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
+$HADOOP_HOME/bin/mapred --daemon start historyserver
 
 # keep container running
 tail -f /dev/null
