@@ -17,31 +17,26 @@ RUN \
 
 # download and extract hadoop, set JAVA_HOME in hadoop-env.sh, update path
 RUN \
-  wget -q http://apache.mirrors.tds.net/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz && \
+  wget http://apache.mirrors.tds.net/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz && \
   tar -xzf hadoop-3.2.1.tar.gz && \
   mv hadoop-3.2.1 $HADOOP_HOME && \
-  echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+  echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
+  echo "PATH=$PATH:$HADOOP_HOME/bin" >> ~/.bashrc
+
 
 RUN \
-  wget -q https://dist.apache.org/repos/dist/release/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz && \
+  wget https://dist.apache.org/repos/dist/release/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz && \
   tar -xzf apache-maven-3.6.3-bin.tar.gz && \
-  mv apache-maven-3.6.3 $MVN_HOME
+  mv apache-maven-3.6.3 $MVN_HOME && \
+  echo "PATH=$PATH:$MVN_HOME/bin" >> ~/.bashrc
+
 
 RUN \
-  wget -q https://dist.apache.org/repos/dist/release/oozie/5.1.0/oozie-5.1.0.tar.gz && \
-  tar -xzf oozie-5.1.0.tar.gz && \
-  mv oozie-5.1.0 $OOZIE_HOME
+   wget https://dist.apache.org/repos/dist/release/oozie/5.1.0/oozie-5.1.0.tar.gz && \
+   tar -xzf oozie-5.1.0.tar.gz && \
+   mv oozie-5.1.0 $OOZIE_HOME && \
+   echo "PATH=$PATH:$OOZIE_HOME/bin" >> ~/.bashrc
    
-RUN \
-  echo "PATH=$PATH:$HADOOP_HOME/bin:$MVN_HOME/bin:$OOZIE_HOME/bin" >> ~/.bashrc
-
-
-ENV PATH="${PATH}:$HADOOP_HOME/bin:$MVN_HOME/bin:$OOZIE_HOME/bin"
-
-# RUN \
-#   $OOZIE_HOME/bin/mkdistro.sh -DskipTests -P hadoop-3
-RUN \
-  $OOZIE_HOME/bin/mkdistro.sh -DskipTests -Puber -Phadoop-3
 
 # create ssh keys
 RUN \
