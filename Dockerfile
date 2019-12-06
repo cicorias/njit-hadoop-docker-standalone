@@ -59,12 +59,19 @@ RUN \
   $OOZIE_HOME/bin/oozie-setup.sh
 
 
+# ENV HUE_HOME /opt/hue
+# RUN \
+#   wget -q https://github.com/cloudera/hue/archive/release-4.6.0.tar.gz && \
+#   tar -xzf release-4.6.0.tar.gz && \
+#   cd 
+  
+
 # download and extract hadoop, set JAVA_HOME in hadoop-env.sh, update path
-#RUN \
-#  wget -q https://dist.apache.org/repos/dist/release/hadoop/common/hadoop-3.2.1/hadoop-3.2.1-src.tar.gz && \
-#  tar -xzf hadoop-3.2.1.tar.gz && \
-#  mv hadoop-3.2.1 $HADOOP_HOME && \
-#  echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+RUN \
+ wget -q https://dist.apache.org/repos/dist/release/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz && \
+ tar -xzf hadoop-3.2.1.tar.gz && \
+ mv hadoop-3.2.1 $HADOOP_HOME && \
+ echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 
 RUN \
   echo "PATH=$PATH:$HADOOP_HOME/bin:$MVN_HOME/bin:$OOZIE_HOME/bin" >> ~/.bashrc

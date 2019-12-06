@@ -30,6 +30,8 @@ $HADOOP_HOME/sbin/start-yarn.sh
 #$HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
 $HADOOP_HOME/bin/mapred --daemon start historyserver
 
+$OOZIE_HOME/bin/oozied.sh start
+
 # keep container running
 #tail -f /dev/null
 sleep infinity
