@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:16.04 AS base
 
 # set environment vars
 ENV HADOOP_HOME /opt/hadoop
@@ -11,16 +11,17 @@ RUN \
   apt-get update && apt-get install -y \
   ssh \
   rsync \
+  unzip \
   vim \
   openjdk-8-jdk
 
 
-# download and extract hadoop, set JAVA_HOME in hadoop-env.sh, update path
-RUN \
-  wget -q http://apache.mirrors.tds.net/hadoop/common/hadoop-3.2.1/hadoop-3.2.1.tar.gz && \
-  tar -xzf hadoop-3.2.1.tar.gz && \
-  mv hadoop-3.2.1 $HADOOP_HOME && \
-  echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+FROM base AS ooziedist
+
+# build the oozie bits
+
+WORKDIR /root
 
 RUN \
   wget -q https://dist.apache.org/repos/dist/release/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz && \
@@ -31,17 +32,42 @@ RUN \
   wget -q https://dist.apache.org/repos/dist/release/oozie/5.1.0/oozie-5.1.0.tar.gz && \
   tar -xzf oozie-5.1.0.tar.gz && \
   mv oozie-5.1.0 $OOZIE_HOME
+
+RUN \
+  wget -q http://archive.cloudera.com/gplextras/misc/ext-2.2.zip && \
+  unzip ext-2.2.zip -d extjs
    
 RUN \
-  echo "PATH=$PATH:$HADOOP_HOME/bin:$MVN_HOME/bin:$OOZIE_HOME/bin" >> ~/.bashrc
+  echo "PATH=$PATH:$MVN_HOME/bin:$OOZIE_HOME/bin" >> ~/.bashrc
 
+ENV PATH="${PATH}:$MVN_HOME/bin:$OOZIE_HOME/bin"
 
-ENV PATH="${PATH}:$HADOOP_HOME/bin:$MVN_HOME/bin:$OOZIE_HOME/bin"
-
-# RUN \
-#   $OOZIE_HOME/bin/mkdistro.sh -DskipTests -P hadoop-3
 RUN \
-  $OOZIE_HOME/bin/mkdistro.sh -DskipTests -Puber -Phadoop-3
+  $OOZIE_HOME/bin/mkdistro.sh -DskipTests -Puber -Phadoop-3 -DgenerateDocs
+
+
+## now the Hadoop image with Oozie to be copied over
+RUN echo $OOZIE_HOME/distro/target/
+
+FROM base
+
+COPY --from=ooziedist $OOZIE_HOME/distro/target/oozie-5.1.0-distro/oozie-5.1.0 $OOZIE_HOME
+COPY --from=ooziedist /root/ext-2.2.zip $OOZIE_HOME/libext/
+ENV PATH="${PATH}:$OOZIE_HOME/bin"
+
+RUN \
+  $OOZIE_HOME/bin/oozie-setup.sh
+
+
+# download and extract hadoop, set JAVA_HOME in hadoop-env.sh, update path
+#RUN \
+#  wget -q https://dist.apache.org/repos/dist/release/hadoop/common/hadoop-3.2.1/hadoop-3.2.1-src.tar.gz && \
+#  tar -xzf hadoop-3.2.1.tar.gz && \
+#  mv hadoop-3.2.1 $HADOOP_HOME && \
+#  echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+RUN \
+  echo "PATH=$PATH:$HADOOP_HOME/bin:$MVN_HOME/bin:$OOZIE_HOME/bin" >> ~/.bashrc
 
 # create ssh keys
 RUN \
@@ -61,7 +87,7 @@ RUN chmod 0600 /root/.ssh/config
 ADD start-hadoop.sh start-hadoop.sh
 
 # expose various ports
-EXPOSE 8088 50070 50075 50030 50060
+EXPOSE 8088 50070 50075 50030 50060 11000 11001 11443
 
 STOPSIGNAL SIGINT
 
